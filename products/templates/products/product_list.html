@@ -1,0 +1,117 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Список Продуктов{% endblock %}
+
+{% block content %}
+
+<!-- Форма для добавления нового продукта -->
+<div class="mb-4">
+    <h2>Добавить продукт</h2>
+    <form id="product-form">
+        <div class="form-group">
+            <label for="name">Название:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Описание:</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="price">Цена:</label>
+            <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+        </div>
+        <button type="submit" class="btn btn-dark">Добавить</button>
+    </form>
+</div>
+
+<!-- Таблица с продуктами -->
+<h3>Список продуктов</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Цена</th>
+        </tr>
+    </thead>
+    <tbody id="product-list">
+        {% for product in products %}
+        <tr>
+            <td><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></td>
+            <td>{{ product.description|truncatewords_html:10 }}</td>
+            <td>{{ product.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('product-form');
+    const productList = document.getElementById('product-list');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const description = document.getElementById('description').value;
+        const price = document.getElementById('price').value;
+
+        console.log('Отправляемые данные:', {
+            name: name,
+            description: description,
+            price: parseFloat(price)
+        });
+
+        try {
+            const response = await fetch('{% url "api-product-list-create" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    description: description,
+                    price: parseFloat(price)
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при добавлении продукта');
+            }
+            form.reset();
+
+            updateProductList();
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    });
+
+    async function updateProductList() {
+        try {
+            const response = await fetch('{% url "api-product-list-create" %}');
+            if (!response.ok) {
+                throw new Error('Ошибка при получении списка продуктов');
+            }
+
+            const products = await response.json();
+            console.log('Полученные продукты:', products);
+
+            productList.innerHTML = products.map(product => `
+                <tr>
+                    <td><a href="/web/products/${product.id}/">${product.name}</a></td>
+                    <td>${product.description}</td>
+                    <td>${product.price}</td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+});
+</script>
+{% endblock scripts %}
