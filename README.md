@@ -15,17 +15,20 @@ git clone https://github.com/Ydtalel/brendwall_app.git
 
     `make build`
 
-2. Запуск контейнера:  
+2. Запуск контейнера:
 
     `make run`
+3. Применение миграции:
+
+   `make migrate`
 
 Приложение будет доступно по адресу:   
 
 `http://localhost:8000/web/products/`
 
-3. Остановка контейнера:
-Чтобы остановить контейнер:  
-`make stop`
+4. Остановка контейнера:
+
+   `make stop`
 
 ### Запуск без Docker
 
@@ -37,13 +40,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 
-2. Применение миграций:   
-`python manage.py migrate`
+2. Применение миграций:  
+
+   `python manage.py makemigrations products`  
+
+   `python manage.py migrate`
 
 
 3. Запуск сервера разработки:  
-`python manage.py runserver`  
+
+   `python manage.py runserver`  
+
 Приложение будет доступно по адресу:  
+
 `http://localhost:8000/web/products/`
 
 ### Swagger UI:
