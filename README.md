@@ -6,9 +6,13 @@
 
 Сначала клонируйте репозиторий на локальную машину:
 
-```bash
+```
 git clone https://github.com/Ydtalel/brendwall_app.git
 ```
+Смените директорию
+
+```cd brendwall_app```
+
 ### Запуск с помощью Docker
 
 1. Сборка образа:  
